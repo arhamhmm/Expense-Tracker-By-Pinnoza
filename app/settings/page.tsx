@@ -6,9 +6,10 @@ import { MainLayout } from '@/components/layout/main-layout'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { CurrencySelector } from '@/components/ui/currency-selector'
+import { CategoryManagement } from '@/components/ui/category-management'
 import { getCurrentUser } from '@/lib/auth'
 import { useCurrency } from '@/lib/currency-context'
-import { Settings, Globe, Palette, Bell, Shield, User } from 'lucide-react'
+import { Settings, Globe, Palette, Bell, Shield, User, Tags } from 'lucide-react'
 import type { AuthUser } from '@/lib/auth'
 import type { CurrencyCode } from '@/lib/utils'
 
@@ -83,6 +84,11 @@ export default function SettingsPage() {
               </div>
             </CardContent>
           </Card>
+
+          {/* Category Management */}
+          <div className="col-span-full">
+            <CategoryManagement />
+          </div>
 
           {/* Account Settings */}
           <Card>

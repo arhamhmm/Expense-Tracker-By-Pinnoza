@@ -72,6 +72,8 @@ export function getInitials(name: string) {
     .slice(0, 2)
 }
 
+// Legacy exports for backwards compatibility
+// These are now managed by the CategoryContext
 export const categories = [
   'Food & Dining',
   'Transportation',

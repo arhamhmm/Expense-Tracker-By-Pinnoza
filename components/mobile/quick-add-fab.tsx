@@ -21,7 +21,8 @@ import {
   GraduationCap,
   MoreHorizontal
 } from 'lucide-react'
-import { categories, type CurrencyCode } from '@/lib/utils'
+import { type CurrencyCode } from '@/lib/utils'
+import { useCategories } from '@/lib/category-context'
 import { useCurrency } from '@/lib/currency-context'
 
 interface QuickExpense {
@@ -52,6 +53,7 @@ const quickAmounts = ['5', '10', '20', '50', '100']
 
 export function QuickAddFAB({ onAddExpense, isDemo }: QuickAddFABProps) {
   const { currency: globalCurrency } = useCurrency()
+  const { categories } = useCategories()
   const [isOpen, setIsOpen] = useState(false)
   const [step, setStep] = useState<'amount' | 'category' | 'description'>('amount')
   const [loading, setLoading] = useState(false)

@@ -14,7 +14,8 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog'
-import { categories, getUserCurrency, type CurrencyCode } from '@/lib/utils'
+import { getUserCurrency, type CurrencyCode } from '@/lib/utils'
+import { useCategories } from '@/lib/category-context'
 import { Loader2 } from 'lucide-react'
 
 interface Expense {
@@ -36,6 +37,7 @@ interface ExpenseFormProps {
 
 export function ExpenseForm({ expense, isOpen, onClose, onSubmit, isDemo }: ExpenseFormProps) {
   const [loading, setLoading] = useState(false)
+  const { categories } = useCategories()
   const [formData, setFormData] = useState({
     date: '',
     category: '',

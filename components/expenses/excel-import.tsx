@@ -21,7 +21,8 @@ import {
   Download,
   X
 } from 'lucide-react'
-import { formatCurrency, categories, type CurrencyCode } from '@/lib/utils'
+import { formatCurrency, type CurrencyCode } from '@/lib/utils'
+import { useCategories } from '@/lib/category-context'
 import { useCurrency } from '@/lib/currency-context'
 
 interface ImportedExpense {
@@ -43,6 +44,7 @@ interface ExcelImportProps {
 
 export function ExcelImport({ isOpen, onClose, onImport, isDemo }: ExcelImportProps) {
   const { currency: globalCurrency } = useCurrency()
+  const { categories } = useCategories()
   const [importedData, setImportedData] = useState<ImportedExpense[]>([])
   const [isProcessing, setIsProcessing] = useState(false)
   const [currentStep, setCurrentStep] = useState<'upload' | 'preview' | 'importing' | 'complete'>('upload')
