@@ -140,13 +140,22 @@ export default function ExpensesPage() {
     }
   }
 
-  const handleAddExpense = async (expenseData: Omit<Expense, 'id'>) => {
+  const handleAddExpense = async (expenseData: { amount: number; category: string; description: string; currency: CurrencyCode; date: string }) => {
     if (!user || user.isDemo) return
 
     try {
+      // Convert to proper Expense format
+      const expenseToSave: Omit<Expense, 'id'> = {
+        date: expenseData.date,
+        category: expenseData.category,
+        description: expenseData.description,
+        amount: typeof expenseData.amount === 'string' ? parseFloat(expenseData.amount) : expenseData.amount,
+        currency: expenseData.currency
+      }
+
       const { data, error } = await supabase
         .from('expenses')
-        .insert([{ ...expenseData, user_id: user.id }])
+        .insert([{ ...expenseToSave, user_id: user.id }])
         .select()
         .single()
 
