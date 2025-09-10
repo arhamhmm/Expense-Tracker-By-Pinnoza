@@ -15,7 +15,7 @@ export function MainLayout({ user, onSignOut, children }: MainLayoutProps) {
       <Sidebar user={user} onSignOut={onSignOut} />
       
       {/* Main content */}
-      <div className="lg:pl-64 pb-16 lg:pb-0">
+      <div className="lg:pl-64 pb-16 lg:pb-0 pt-16 lg:pt-0">
         <main className="main-content flex-1">
           <div className="px-4 sm:px-6 lg:px-8 py-8">
             {children}

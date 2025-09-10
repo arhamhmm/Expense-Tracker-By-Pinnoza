@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { MainLayout } from '@/components/layout/main-layout'
 import { SummaryCard } from '@/components/ui/summary-card'
+import { ExpenseCharts } from '@/components/ui/expense-charts'
 import { getCurrentUser } from '@/lib/auth'
 import { supabase } from '@/lib/supabase'
 import { formatCurrency, getUserCurrency, convertCurrency, type CurrencyCode } from '@/lib/utils'
@@ -28,6 +29,11 @@ export default function DashboardPage() {
     projectCount: 0,
     groupCount: 0,
     topCategory: 'N/A'
+  })
+  const [chartData, setChartData] = useState({
+    categoryData: [] as { name: string; value: number }[],
+    monthlyData: [] as { name: string; value: number }[],
+    weeklyData: [] as { name: string; value: number }[]
   })
   const router = useRouter()
 
@@ -57,6 +63,35 @@ export default function DashboardPage() {
         projectCount: 3,
         groupCount: 2,
         topCategory: 'Food & Dining'
+      })
+      
+      // Demo chart data
+      setChartData({
+        categoryData: [
+          { name: 'Food & Dining', value: 856 },
+          { name: 'Transportation', value: 432 },
+          { name: 'Shopping', value: 321 },
+          { name: 'Entertainment', value: 268 },
+          { name: 'Bills & Utilities', value: 195 },
+          { name: 'Healthcare', value: 142 }
+        ],
+        monthlyData: [
+          { name: 'Jan', value: 1200 },
+          { name: 'Feb', value: 1456 },
+          { name: 'Mar', value: 1789 },
+          { name: 'Apr', value: 1234 },
+          { name: 'May', value: 1567 },
+          { name: 'Jun', value: 1890 }
+        ],
+        weeklyData: [
+          { name: 'Mon', value: 45 },
+          { name: 'Tue', value: 67 },
+          { name: 'Wed', value: 32 },
+          { name: 'Thu', value: 89 },
+          { name: 'Fri', value: 156 },
+          { name: 'Sat', value: 234 },
+          { name: 'Sun', value: 123 }
+        ]
       })
       return
     }
@@ -116,6 +151,52 @@ export default function DashboardPage() {
         projectCount,
         groupCount,
         topCategory
+      })
+
+      // Generate chart data
+      const categoryData = Object.entries(categoryTotals)
+        .map(([name, value]) => ({ name, value }))
+        .sort((a, b) => b.value - a.value)
+        .slice(0, 6)
+
+      // Generate monthly data (last 6 months)
+      const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
+      const monthlyData = Array.from({ length: 6 }, (_, i) => {
+        const monthDate = new Date(now.getFullYear(), now.getMonth() - (5 - i), 1)
+        const monthStart = new Date(monthDate.getFullYear(), monthDate.getMonth(), 1).toISOString()
+        const monthEnd = new Date(monthDate.getFullYear(), monthDate.getMonth() + 1, 0).toISOString()
+        
+        const monthExpenses = expenses?.filter(exp => 
+          exp.date >= monthStart && exp.date <= monthEnd
+        ) || []
+        
+        return {
+          name: monthNames[monthDate.getMonth()],
+          value: monthExpenses.reduce((sum, exp) => sum + exp.amount, 0)
+        }
+      })
+
+      // Generate weekly data (last 7 days)
+      const dayNames = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']
+      const weeklyData = Array.from({ length: 7 }, (_, i) => {
+        const dayDate = new Date(now.getTime() - (6 - i) * 24 * 60 * 60 * 1000)
+        const dayStart = new Date(dayDate.getFullYear(), dayDate.getMonth(), dayDate.getDate()).toISOString()
+        const dayEnd = new Date(dayDate.getFullYear(), dayDate.getMonth(), dayDate.getDate() + 1).toISOString()
+        
+        const dayExpenses = expenses?.filter(exp => 
+          exp.date >= dayStart && exp.date < dayEnd
+        ) || []
+        
+        return {
+          name: dayNames[dayDate.getDay()],
+          value: dayExpenses.reduce((sum, exp) => sum + exp.amount, 0)
+        }
+      })
+
+      setChartData({
+        categoryData,
+        monthlyData,
+        weeklyData
       })
     } catch (error) {
       console.error('Error loading dashboard stats:', error)
@@ -186,6 +267,13 @@ export default function DashboardPage() {
             icon={TrendingUp}
           />
         </div>
+
+        {/* Charts */}
+        <ExpenseCharts 
+          categoryData={chartData.categoryData}
+          monthlyData={chartData.monthlyData}
+          weeklyData={chartData.weeklyData}
+        />
 
         {/* Quick Actions */}
         <div className="grid gap-4 md:grid-cols-3">

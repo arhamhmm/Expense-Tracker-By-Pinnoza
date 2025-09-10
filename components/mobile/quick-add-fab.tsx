@@ -118,7 +118,7 @@ export function QuickAddFAB({ onAddExpense, isDemo }: QuickAddFABProps) {
     <>
       {/* Floating Action Button */}
       <motion.div
-        className="fixed bottom-6 right-6 z-50 md:hidden"
+        className="fixed bottom-20 right-4 z-50 md:hidden"
         initial={{ scale: 0 }}
         animate={{ scale: 1 }}
         transition={{ delay: 0.5 }}
@@ -127,10 +127,14 @@ export function QuickAddFAB({ onAddExpense, isDemo }: QuickAddFABProps) {
           onClick={() => setIsOpen(true)}
           disabled={isDemo}
           size="lg"
-          className="h-14 w-14 rounded-full shadow-lg"
+          className="h-14 w-14 rounded-full shadow-lg bg-primary hover:bg-primary/90 text-primary-foreground border-2 border-white"
         >
           <Plus className="h-6 w-6" />
         </Button>
+        {/* FAB Label */}
+        <div className="absolute bottom-full right-0 mb-2 mr-1 bg-black/75 text-white text-xs px-2 py-1 rounded whitespace-nowrap opacity-0 animate-pulse">
+          Quick Add
+        </div>
       </motion.div>
 
       {/* Quick Add Modal */}

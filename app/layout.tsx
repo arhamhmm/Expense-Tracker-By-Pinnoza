@@ -10,7 +10,7 @@ export const metadata: Metadata = {
   title: 'Smart Expense Tracker',
   description: 'Track your expenses, manage projects, and split bills with ease',
   manifest: '/manifest.json',
-  themeColor: '#3b82f6',
+  themeColor: '#22c55e',
   viewport: 'width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no',
   appleWebApp: {
     capable: true,
@@ -18,8 +18,9 @@ export const metadata: Metadata = {
     title: 'Expense Tracker'
   },
   icons: {
-    icon: '/icon.svg',
-    apple: '/icon-192.png'
+    icon: '/logo.png',
+    apple: '/logo.png',
+    shortcut: '/logo.png'
   }
 }
 
