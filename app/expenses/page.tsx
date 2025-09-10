@@ -41,6 +41,13 @@ interface Expense {
   currency: CurrencyCode
 }
 
+interface QuickExpense {
+  amount: string
+  category: string
+  description: string
+  currency: CurrencyCode
+}
+
 const demoExpenses: Expense[] = [
   { id: '1', date: '2024-01-15', category: 'Food & Dining', description: 'Lunch at Restaurant', amount: 25.50, currency: 'USD' },
   { id: '2', date: '2024-01-14', category: 'Transportation', description: 'Gas Station', amount: 45.00, currency: 'USD' },
@@ -140,16 +147,33 @@ export default function ExpensesPage() {
     }
   }
 
-  const handleAddExpense = async (expenseData: { amount: number; category: string; description: string; currency: CurrencyCode; date: string }) => {
+  const handleAddExpense = async (expenseData: Omit<Expense, 'id'>) => {
     if (!user || user.isDemo) return
 
     try {
-      // Convert to proper Expense format
+      const { data, error } = await supabase
+        .from('expenses')
+        .insert([{ ...expenseData, user_id: user.id }])
+        .select()
+        .single()
+
+      if (error) throw error
+      setExpenses(prev => [data, ...prev])
+    } catch (error) {
+      console.error('Error adding expense:', error)
+    }
+  }
+
+  const handleQuickAddExpense = async (expenseData: { amount: number; category: string; description: string; currency: "USD" | "EUR" | "CAD" | "PKR"; date: string }) => {
+    if (!user || user.isDemo) return
+
+    try {
+      // Convert to proper Expense format (amount is already a number from QuickAddFAB)
       const expenseToSave: Omit<Expense, 'id'> = {
         date: expenseData.date,
         category: expenseData.category,
         description: expenseData.description,
-        amount: typeof expenseData.amount === 'string' ? parseFloat(expenseData.amount) : expenseData.amount,
+        amount: expenseData.amount, // Already a number
         currency: expenseData.currency
       }
 
@@ -553,7 +577,7 @@ export default function ExpensesPage() {
       />
 
       <QuickAddFAB
-        onAddExpense={handleAddExpense}
+        onAddExpense={handleQuickAddExpense}
         isDemo={user.isDemo}
       />
     </MainLayout>
