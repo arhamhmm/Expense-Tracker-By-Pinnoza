@@ -81,3 +81,4 @@ You'll know it's working when:
 - ✅ Edit/delete icons work on existing entries
 
 The project entries functionality should now be **100% operational** for demo users! 🚀
+

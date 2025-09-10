@@ -133,3 +133,4 @@ formatCurrency(amount, globalCurrency)  // Instead of formatCurrency(amount)
 ✅ **Demo-Friendly**: Everything works perfectly in demo mode  
 
 The expense tracker now has a complete, professional settings system and fully functional bill splitting with global currency support! 🚀
+

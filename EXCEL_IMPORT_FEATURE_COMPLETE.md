@@ -141,3 +141,4 @@ Your massive expense data can now be imported in minutes instead of entering eac
 - **Currency column is optional** - will use your global currency setting
 
 The Excel import feature is now fully integrated and ready to handle your massive expense data! 🎉
+

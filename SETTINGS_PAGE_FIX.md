@@ -54,3 +54,4 @@ The sidebar component was trying to access `user.email` when the `user` object m
 - **Future-Ready**: Sections for themes, notifications, etc.
 
 The settings page should now be fully accessible and functional! 🚀
+

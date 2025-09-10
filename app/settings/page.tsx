@@ -36,22 +36,21 @@ export default function SettingsPage() {
     setCurrency(newCurrency)
   }
 
-  if (loading) {
+  const handleSignOut = () => {
+    setUser(null)
+    router.push('/')
+  }
+
+  if (loading || !user) {
     return (
-      <MainLayout>
-        <div className="flex items-center justify-center min-h-screen">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
-        </div>
-      </MainLayout>
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-primary"></div>
+      </div>
     )
   }
 
-  if (!user) {
-    return null
-  }
-
   return (
-    <MainLayout>
+    <MainLayout user={user} onSignOut={handleSignOut}>
       <div className="space-y-8">
         {/* Header */}
         <div>
@@ -237,3 +236,4 @@ export default function SettingsPage() {
     </MainLayout>
   )
 }
+

@@ -32,7 +32,7 @@ interface QuickExpense {
 }
 
 interface QuickAddFABProps {
-  onAddExpense: (expense: Omit<QuickExpense, 'currency'> & { currency: CurrencyCode; date: string }) => Promise<void>
+  onAddExpense: (expense: { amount: number; category: string; description: string; currency: CurrencyCode; date: string }) => Promise<void>
   isDemo?: boolean
 }
 
@@ -78,7 +78,10 @@ export function QuickAddFAB({ onAddExpense, isDemo }: QuickAddFABProps) {
     setLoading(true)
     try {
       await onAddExpense({
-        ...expense,
+        amount: parseFloat(expense.amount),
+        category: expense.category,
+        description: expense.description,
+        currency: expense.currency,
         date: new Date().toISOString().split('T')[0]
       })
       
@@ -357,3 +360,4 @@ function getQuickDescriptions(category: string): string[] {
   
   return descriptions[category] || descriptions['Other']
 }
+

@@ -87,3 +87,4 @@ useEffect(() => {
 2. Delete `.next` folder and restart: `rm -rf .next && npm run dev`
 3. Check browser console for any remaining JavaScript errors
 4. Verify database tables exist if using real Supabase (not demo mode)
+

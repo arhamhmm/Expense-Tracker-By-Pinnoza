@@ -89,3 +89,4 @@ export const onAuthStateChange = (callback: (user: AuthUser | null) => void) => 
     }
   })
 }
+
