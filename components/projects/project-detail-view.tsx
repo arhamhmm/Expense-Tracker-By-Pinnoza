@@ -7,6 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Progress } from '@/components/ui/progress'
 import { ProjectEntryCard } from './project-entry-card'
 import { ProjectEntryForm } from './project-entry-form'
+import { ProjectExcelImport } from './project-excel-import'
 import {
   Dialog,
   DialogContent,
@@ -17,7 +18,7 @@ import {
 import { formatCurrency, convertCurrency, type CurrencyCode } from '@/lib/utils'
 import { useCurrency } from '@/lib/currency-context'
 import { supabase } from '@/lib/supabase'
-import { Plus, ArrowLeft, Receipt } from 'lucide-react'
+import { Plus, ArrowLeft, Receipt, FileSpreadsheet } from 'lucide-react'
 import type { AuthUser } from '@/lib/auth'
 
 interface Project {
@@ -58,6 +59,7 @@ export function ProjectDetailView({ project, user, isOpen, onClose, onProjectUpd
   const { currency: globalCurrency } = useCurrency()
   const [entries, setEntries] = useState<ProjectEntry[]>([])
   const [isEntryFormOpen, setIsEntryFormOpen] = useState(false)
+  const [isImportOpen, setIsImportOpen] = useState(false)
   const [editingEntry, setEditingEntry] = useState<ProjectEntry | null>(null)
   const [loading, setLoading] = useState(false)
 
@@ -234,6 +236,53 @@ export function ProjectDetailView({ project, user, isOpen, onClose, onProjectUpd
     setEditingEntry(null)
   }
 
+  const handleBulkImport = async (importedEntries: any[]) => {
+    if (!user) return
+
+    if (user.isDemo) {
+      // Handle demo mode - add to local state only
+      const newEntries: ProjectEntry[] = importedEntries.map(entry => ({
+        id: `demo-${Date.now()}-${Math.random()}`,
+        ...entry
+      }))
+      setEntries(prev => [...newEntries, ...prev])
+      onProjectUpdate()
+      return
+    }
+
+    try {
+      const { data, error } = await supabase
+        .from('project_entries')
+        .insert(importedEntries)
+        .select()
+
+      if (error) throw error
+
+      // Calculate total amount to add to project spent
+      const totalToAdd = importedEntries.reduce((sum, entry) => {
+        const convertedAmount = entry.currency === project.currency 
+          ? entry.amount 
+          : convertCurrency(entry.amount, entry.currency, project.currency)
+        return sum + convertedAmount
+      }, 0)
+
+      // Update project spent amount
+      await supabase
+        .from('projects')
+        .update({ spent: project.spent + totalToAdd })
+        .eq('id', project.id)
+
+      // Add new entries to state
+      if (data) {
+        setEntries(prev => [...data, ...prev])
+      }
+      onProjectUpdate()
+    } catch (error) {
+      console.error('Error importing project entries:', error)
+      throw error
+    }
+  }
+
   // Calculate totals in global currency
   const budgetInGlobalCurrency = project.currency === globalCurrency 
     ? project.budget 
@@ -315,13 +364,23 @@ export function ProjectDetailView({ project, user, isOpen, onClose, onProjectUpd
               <h3 className="text-lg font-semibold">
                 Project Entries ({entries.length})
               </h3>
-              <Button 
-                onClick={() => setIsEntryFormOpen(true)}
-                size="sm"
-              >
-                <Plus className="mr-2 h-4 w-4" />
-                Add Entry
-              </Button>
+              <div className="flex gap-2">
+                <Button 
+                  onClick={() => setIsImportOpen(true)}
+                  size="sm"
+                  variant="outline"
+                >
+                  <FileSpreadsheet className="mr-2 h-4 w-4" />
+                  Import Excel
+                </Button>
+                <Button 
+                  onClick={() => setIsEntryFormOpen(true)}
+                  size="sm"
+                >
+                  <Plus className="mr-2 h-4 w-4" />
+                  Add Entry
+                </Button>
+              </div>
             </div>
 
             {loading ? (
@@ -369,6 +428,16 @@ export function ProjectDetailView({ project, user, isOpen, onClose, onProjectUpd
         isOpen={isEntryFormOpen}
         onClose={closeForm}
         onSubmit={editingEntry ? handleEditEntry : handleAddEntry}
+        isDemo={user.isDemo}
+      />
+
+      {/* Excel Import Modal */}
+      <ProjectExcelImport
+        isOpen={isImportOpen}
+        onClose={() => setIsImportOpen(false)}
+        onImport={handleBulkImport}
+        projectId={project.id}
+        projectName={project.name}
         isDemo={user.isDemo}
       />
     </Dialog>
